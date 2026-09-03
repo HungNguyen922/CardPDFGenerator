@@ -49,6 +49,7 @@
 <div id="fileList"></div>
 
 <button id="compileBtn">Compile PDFs</button>
+<button id="clearBtn">Clear All</button>
 
 <script type="module">
   import { generateCardPDFs } from "./cards2pdfBrowser.js";
@@ -97,8 +98,21 @@
 
   function renderList() {
     fileList.innerHTML = images
-      .map(img => `<div class="file-item">${img.name}</div>`)
+      .map((img, index) => `
+        <div class="file-item">
+          <span>${img.name}</span>
+          <button class="remove-btn" data-index="${index}">X</button>
+        </div>
+      `)
       .join("");
+
+    document.querySelectorAll(".remove-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.index, 10);
+        images.splice(idx, 1);
+        renderList();
+      });
+    });
   }
 
   compileBtn.addEventListener("click", () => {
