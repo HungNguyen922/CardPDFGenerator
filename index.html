@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Card Sheet PDF Generator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <style>
     body {
       font-family: sans-serif;
@@ -34,6 +35,80 @@
     }
   </style>
 </head>
+
 <body>
 
-<h1>Card Sheet PDF Generator
+<h1>Card Sheet PDF Generator</h1>
+
+<div id="dropzone">
+  <p>Drag & drop images here</p>
+  <p>or</p>
+  <input type="file" id="fileInput" multiple accept="image/*">
+</div>
+
+<div id="fileList"></div>
+
+<button id="compileBtn">Compile PDFs</button>
+
+<script type="module">
+  import { generateCardPDFs } from "./make-cards-pdf.js";
+
+  const images = [];
+
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("fileInput");
+  const fileList = document.getElementById("fileList");
+  const compileBtn = document.getElementById("compileBtn");
+
+  dropzone.addEventListener("dragover", e => {
+    e.preventDefault();
+    dropzone.style.background = "#eee";
+  });
+
+  dropzone.addEventListener("dragleave", () => {
+    dropzone.style.background = "";
+  });
+
+  dropzone.addEventListener("drop", e => {
+    e.preventDefault();
+    dropzone.style.background = "";
+    handleFiles(e.dataTransfer.files);
+  });
+
+  fileInput.addEventListener("change", e => {
+    handleFiles(e.target.files);
+  });
+
+  function handleFiles(fileListInput) {
+    for (const file of fileListInput) {
+      if (!file.type.startsWith("image/")) continue;
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        images.push({
+          name: file.name,
+          dataUrl: e.target.result
+        });
+        renderList();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function renderList() {
+    fileList.innerHTML = images
+      .map(img => `<div class="file-item">${img.name}</div>`)
+      .join("");
+  }
+
+  compileBtn.addEventListener("click", () => {
+    if (images.length === 0) {
+      alert("No images loaded.");
+      return;
+    }
+    generateCardPDFs(images);
+  });
+</script>
+
+</body>
+</html>
