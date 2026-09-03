@@ -5,34 +5,82 @@
   <title>Card Sheet PDF Generator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <style>
-    body {
-      font-family: sans-serif;
-      max-width: 800px;
-      margin: 40px auto;
-    }
-    #dropzone {
-      border: 2px dashed #888;
-      padding: 40px;
-      text-align: center;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-    #fileInput {
-      margin-top: 10px;
-    }
-    #fileList {
-      margin-top: 20px;
-    }
-    .file-item {
-      padding: 5px 0;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
+    <style>
+        body {
+        font-family: sans-serif;
+        max-width: 900px;
+        margin: 40px auto;
+        }
+
+        #dropzone {
+        border: 2px dashed #888;
+        padding: 40px;
+        text-align: center;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        }
+
+        #fileInput {
+        margin-top: 10px;
+        }
+
+        /* Two-column layout */
+        #content {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 20px;
+        margin-top: 20px;
+        }
+
+        /* Left column buttons */
+        #controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        }
+
+        button {
+        padding: 10px 16px;
+        font-size: 15px;
+        cursor: pointer;
+        }
+
+        #clearBtn {
+        background: #777;
+        color: white;
+        }
+
+        /* Right column list */
+        #fileList {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 6px;
+        max-height: 500px;
+        overflow-y: auto;
+        }
+
+        .file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
+        font-size: 14px;
+        border-bottom: 1px solid #eee;
+        }
+
+        .file-item:last-child {
+        border-bottom: none;
+        }
+
+        .remove-btn {
+        background: #d9534f;
+        color: white;
+        border: none;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        }
   </style>
 </head>
 
@@ -46,10 +94,17 @@
   <input type="file" id="fileInput" multiple accept="image/*">
 </div>
 
-<div id="fileList"></div>
+<!-- Two-column layout -->
+<div id="content">
+  <!-- Left column -->
+  <div id="controls">
+    <button id="compileBtn">Compile PDFs</button>
+    <button id="clearBtn">Clear All</button>
+  </div>
 
-<button id="compileBtn">Compile PDFs</button>
-<button id="clearBtn">Clear All</button>
+  <!-- Right column -->
+  <div id="fileList"></div>
+</div>
 
 <script type="module">
   import { generateCardPDFs } from "./cards2pdfBrowser.js";
@@ -60,6 +115,7 @@
   const fileInput = document.getElementById("fileInput");
   const fileList = document.getElementById("fileList");
   const compileBtn = document.getElementById("compileBtn");
+  const clearBtn = document.getElementById("clearBtn");
 
   dropzone.addEventListener("dragover", e => {
     e.preventDefault();
